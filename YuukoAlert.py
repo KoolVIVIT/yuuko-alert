@@ -54,8 +54,8 @@ def show_alert():
 		else:
 			raise FileNotFoundError(f"Image not found: {img_path}")
 
-		text_label = tk.Label(root, text=config['text_content'], font=('Segoe UI', '12'))
-		text_label.place(relx=0.85, rely=0.35, anchor='e')
+		text_label = tk.Label(root, text=config['text_content'], font=('Helvetica LT Std', '12'))
+		text_label.place(relx=0.92, rely=0.35, anchor='e')
 
 		close = tk.Button(root, text="        OK        ", font=("Segoe UI", "10"), command=root.destroy)
 		close.place(relx=0.5, rely=0.8, anchor='center')
