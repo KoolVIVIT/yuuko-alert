@@ -30,9 +30,14 @@ def show_alert():
 	close.pack(padx=5, pady=5)
 
 	pygame.mixer.init()
-	my_sound = pygame.mixer.Sound('files/sound.MP3')
-	my_sound.play()
-	my_sound.set_volume(0.8)
+	sound_path = "files/sound.MP3"
+	if os.path.exists(sound_path):
+		my_sound = pygame.mixer.Sound(sound_path)
+		my_sound.play()
+		my_sound.set_volume(0.8)
+	else:
+		print(f"Sound file not found: {sound_path}")
+
 
 	root.mainloop()
 
