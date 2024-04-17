@@ -1,6 +1,7 @@
 import pygame
 import tkinter as tk
 from PIL import Image,ImageTk
+import os
 
 def show_alert():
 	pygame.init()
@@ -14,10 +15,14 @@ def show_alert():
 	canvas= tk.Canvas(root, width= 250, height= 80)
 	canvas.pack(padx=5, pady=5)
 
-	with Image.open("files/face.png") as img:
-		resized_image= img.resize((80,72), Image.LANCZOS)
-		new_image= ImageTk.PhotoImage(resized_image)
-		canvas.create_image(10,10, anchor="nw", image=new_image)
+	img_path = "files/face.png"
+	if os.path.exists(img_path):
+		with Image.open(img_path) as img:
+			resized_image= img.resize((80,72), Image.LANCZOS)
+			new_image= ImageTk.PhotoImage(resized_image)
+			canvas.create_image(10,10, anchor="nw", image=new_image)
+	else:
+		raise FileNotFoundError(f"Image not found: {img_path}")
 
 	canvas.create_text(170, 50, text="Selamat Pagi !", fill="black", font=('Segoe UI', '11'))
 
