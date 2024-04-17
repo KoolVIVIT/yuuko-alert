@@ -2,9 +2,29 @@ import pygame
 import tkinter as tk
 from PIL import Image,ImageTk
 import os
+import sys
+import atexit
+
+PID_FILE = 'yuuko_alert.pid'
+
+def acquire_lock():
+	pid = str(os.getpid())
+	try:
+		with open(PID_FILE, 'x') as pid_file:
+			pid_file.write(pid)
+	except FileExistsError:
+		print("Another instance is already running!")
+		sys.exit(1)
+	atexit.register(release_lock)
+
+def release_lock():
+	if os.path.exists(PID_FILE):
+		os.remove(PID_FILE)
 
 def show_alert():
 	try:
+		acquire_lock()
+
 		pygame.init()
 		root = tk.Tk()
 		root.resizable(False,False)
