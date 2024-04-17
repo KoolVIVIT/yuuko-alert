@@ -4,7 +4,9 @@ from PIL import Image,ImageTk
 import os
 import sys
 import atexit
+import configparser
 
+CONFIG_FILE = 'config.ini'
 PID_FILE = 'yuuko_alert.pid'
 
 def acquire_lock():
@@ -21,37 +23,45 @@ def release_lock():
 	if os.path.exists(PID_FILE):
 		os.remove(PID_FILE)
 
+def load_config():
+	config = configparser.ConfigParser()
+	config.read(CONFIG_FILE)
+	return config['AlertSettings']
+
 def show_alert():
 	try:
-		acquire_lock()
+#		acquire_lock()
+
+		config = load_config()
 
 		pygame.init()
 		root = tk.Tk()
-		root.resizable(False,False)
-		root.geometry("250x150")
+		root.resizable(True,True)
+		root.geometry(f"{config.getint('window_width')}x{config.getint('window_height')}")
 		root.eval('tk::PlaceWindow . center')
 		root.iconphoto(False, tk.PhotoImage(file='files/icon.png'))
-		root.title("Yuuko Alert")
+		root.title(config['window_title'])
 
-		canvas= tk.Canvas(root, width= 250, height= 80)
+		canvas = tk.Canvas(root, width=config.getint('window_width'), height=config.getint('window_height') // 1)
 		canvas.pack(padx=5, pady=5)
 
-		img_path = "files/face.png"
+		img_path = config['image_path']
 		if os.path.exists(img_path):
 			with Image.open(img_path) as img:
 				resized_image= img.resize((80,72), Image.LANCZOS)
 				new_image= ImageTk.PhotoImage(resized_image)
-				canvas.create_image(10,10, anchor="nw", image=new_image)
+				canvas.create_image(8,8, anchor="nw", image=new_image)
 		else:
 			raise FileNotFoundError(f"Image not found: {img_path}")
 
-		canvas.create_text(170, 50, text="Selamat Pagi !", fill="black", font=('Segoe UI', '11'))
+		text_label = tk.Label(root, text=config['text_content'], font=('Segoe UI', '12'))
+		text_label.place(relx=0.85, rely=0.35, anchor='e')
 
 		close = tk.Button(root, text="        OK        ", font=("Segoe UI", "10"), command=root.destroy)
-		close.pack(padx=5, pady=5)
+		close.place(relx=0.5, rely=0.8, anchor='center')
 
 		pygame.mixer.init()
-		sound_path = "files/sound.MP3"
+		sound_path = config['sound_path']
 		if os.path.exists(sound_path):
 			my_sound = pygame.mixer.Sound(sound_path)
 			my_sound.play()
@@ -74,3 +84,4 @@ if __name__ == "__main__":
 		pass
 
 	show_alert()
+
